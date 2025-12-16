@@ -2,55 +2,10 @@
 Mesafe matrisi ve feromon matrisi yardımcı fonksiyonları.
 
 Bu modül, göletler arası mesafe matrislerini oluşturmak için kullanılır.
-İki yöntem desteklenir:
-1. Haversine formülü: Kuş uçuşu mesafe (hızlı, ücretsiz)
-2. Google Distance Matrix API: Gerçek sürüş mesafesi (daha doğru, API anahtarı gerekli)
+Google Distance Matrix API ile gerçek sürüş mesafeleri hesaplanır.
 """
 import numpy as np
 import requests
-from .haversine import haversine_km
-
-
-def build_distance_matrix_haversine(lakes):
-    """
-    Kuş uçuşu (haversine) mesafe matrisi oluşturur.
-    
-    Bu fonksiyon, Haversine formülünü kullanarak tüm göletler arasındaki
-    kuş uçuşu mesafelerini hesaplar ve bir NxN matris olarak döndürür.
-    
-    Avantajları:
-    - Ücretsiz (API anahtarı gerekmez)
-    - Hızlı hesaplama
-    
-    Dezavantajları:
-    - Gerçek sürüş mesafesini vermez (kuş uçuşu)
-    - Yol ağını dikkate almaz
-    
-    Args:
-        lakes: Gölet bilgilerini içeren liste. Her eleman 'lat' ve 'lng' anahtarlarına sahip olmalı.
-               Örnek: [{"lat": 39.9334, "lng": 32.8597}, ...]
-    
-    Returns:
-        NxN mesafe matrisi (kilometre cinsinden). dist[i][j] = i. ve j. gölet arası mesafe.
-        Diagonal elemanlar 0'dır (aynı gölet).
-    """
-    n = len(lakes)
-    dist = np.zeros((n, n), dtype=float)
-    
-    # Her gölet çifti için mesafe hesapla
-    for i in range(n):
-        for j in range(n):
-            if i == j:
-                # Aynı gölet ise mesafe 0
-                dist[i, j] = 0.0
-            else:
-                # Haversine formülü ile mesafe hesapla
-                dist[i, j] = haversine_km(
-                    lakes[i]["lat"], lakes[i]["lng"],  # i. göletin koordinatları
-                    lakes[j]["lat"], lakes[j]["lng"]   # j. göletin koordinatları
-                )
-    
-    return dist
 
 
 def build_distance_matrix_google(lakes, api_key, mode="driving"):
